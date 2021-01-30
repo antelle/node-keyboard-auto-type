@@ -189,6 +189,11 @@ declare namespace NodeKeyboardAutoType {
         url?: string;
     }
 
+    interface KeyCodeWithModifiers {
+        code: number;
+        modifier: Modifier;
+    }
+
     class AutoType {
         text(str: string): void;
         keyPress(code: KeyCode, modifier?: Modifier): void;
@@ -201,6 +206,8 @@ declare namespace NodeKeyboardAutoType {
             code?: number,
             modifier?: Modifier
         ): void;
+        osKeyCode(code: KeyCode): number | undefined;
+        osKeyCodesForChars(str: string): [KeyCodeWithModifiers | undefined];
         ensureModifierNotPressed(): void;
         setAutoUnpressModifiers(autoUnpressModifiers: boolean): void;
         setCheckPressedModifiers(checkPressedModifiers: boolean): void;

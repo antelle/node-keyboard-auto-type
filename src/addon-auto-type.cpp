@@ -69,28 +69,32 @@ class AutoType : public Napi::ObjectWrap<AutoType> {
     Napi::Value set_auto_unpress_modifiers(const Napi::CallbackInfo &info);
     Napi::Value set_check_pressed_modifiers(const Napi::CallbackInfo &info);
     Napi::Value ensure_modifier_not_pressed(const Napi::CallbackInfo &info);
+    Napi::Value os_key_code(const Napi::CallbackInfo &info);
+    Napi::Value os_key_codes_for_chars(const Napi::CallbackInfo &info);
     Napi::Value active_window(const Napi::CallbackInfo &info);
     Napi::Value active_pid(const Napi::CallbackInfo &info);
     Napi::Value show_window(const Napi::CallbackInfo &info);
 };
 
 Napi::Object AutoType::init(Napi::Env env, Napi::Object exports) {
-    Napi::Function func =
-        DefineClass(env, "AutoType",
-                    {
-                        InstanceMethod<&AutoType::text>("text"),
-                        InstanceMethod<&AutoType::key_press>("keyPress"),
-                        InstanceMethod<&AutoType::shortcut>("shortcut"),
-                        InstanceMethod<&AutoType::key_move_with_code>("keyMoveWithCode"),
-                        InstanceMethod<&AutoType::key_move_with_modifier>("keyMoveWithModifier"),
-                        InstanceMethod<&AutoType::key_move_with_character>("keyMoveWithCharacter"),
-                        InstanceMethod<&AutoType::set_auto_unpress_modifiers>("setAutoUnpressModifiers"),
-                        InstanceMethod<&AutoType::set_check_pressed_modifiers>("setCheckPressedModifiers"),
-                        InstanceMethod<&AutoType::ensure_modifier_not_pressed>("ensureModifierNotPressed"),
-                        InstanceMethod<&AutoType::active_window>("activeWindow"),
-                        InstanceMethod<&AutoType::active_pid>("activePid"),
-                        InstanceMethod<&AutoType::show_window>("showWindow"),
-                    });
+    Napi::Function func = DefineClass(
+        env, "AutoType",
+        {
+            InstanceMethod<&AutoType::text>("text"),
+            InstanceMethod<&AutoType::key_press>("keyPress"),
+            InstanceMethod<&AutoType::shortcut>("shortcut"),
+            InstanceMethod<&AutoType::key_move_with_code>("keyMoveWithCode"),
+            InstanceMethod<&AutoType::key_move_with_modifier>("keyMoveWithModifier"),
+            InstanceMethod<&AutoType::key_move_with_character>("keyMoveWithCharacter"),
+            InstanceMethod<&AutoType::set_auto_unpress_modifiers>("setAutoUnpressModifiers"),
+            InstanceMethod<&AutoType::set_check_pressed_modifiers>("setCheckPressedModifiers"),
+            InstanceMethod<&AutoType::ensure_modifier_not_pressed>("ensureModifierNotPressed"),
+            InstanceMethod<&AutoType::os_key_code>("osKeyCode"),
+            InstanceMethod<&AutoType::os_key_codes_for_chars>("osKeyCodesForChars"),
+            InstanceMethod<&AutoType::active_window>("activeWindow"),
+            InstanceMethod<&AutoType::active_pid>("activePid"),
+            InstanceMethod<&AutoType::show_window>("showWindow"),
+        });
 
     Napi::FunctionReference *constructor = new Napi::FunctionReference();
 
@@ -261,6 +265,52 @@ Napi::Value AutoType::set_check_pressed_modifiers(const Napi::CallbackInfo &info
     auto value = info[0].ToBoolean().Value();
     typer_.set_check_pressed_modifiers(value);
     return info.Env().Undefined();
+}
+
+Napi::Value AutoType::os_key_code(const Napi::CallbackInfo &info) {
+    if (!info.Length() || !info[0].IsNumber()) {
+        Napi::TypeError::New(info.Env(), "Empty key code").ThrowAsJavaScriptException();
+        return info.Env().Undefined();
+    }
+
+    auto code = info[0].ToNumber().Int32Value();
+    if (code <= 0 && code >= static_cast<int>(kbd::KeyCode::KeyCodeCount)) {
+        Napi::RangeError::New(info.Env(), "Bad key code").ThrowAsJavaScriptException();
+        return info.Env().Undefined();
+    }
+
+    auto kc = typer_.os_key_code(static_cast<kbd::KeyCode>(code));
+
+    if (!kc.has_value()) {
+        return info.Env().Undefined();
+    }
+    return Napi::Number::New(info.Env(), kc.value());
+}
+
+Napi::Value AutoType::os_key_codes_for_chars(const Napi::CallbackInfo &info) {
+    if (!info.Length() || !info[0].IsString()) {
+        Napi::TypeError::New(info.Env(), "Empty string").ThrowAsJavaScriptException();
+        return info.Env().Undefined();
+    }
+
+    auto str = to_str(info[0].ToString());
+
+    auto key_codes = typer_.os_key_codes_for_chars(str);
+
+    auto result = Napi::Array::New(info.Env(), key_codes.size());
+    for (size_t i = 0; i < key_codes.size(); i++) {
+        auto kc = key_codes[i];
+        if (kc.has_value()) {
+            auto item = Napi::Object::New(info.Env());
+            item.Set("code", Napi::Number::New(info.Env(), kc->code));
+            if (kc->modifier != kbd::Modifier::None) {
+                item.Set("modifier", Napi::Number::New(info.Env(), static_cast<int>(kc->modifier)));
+            }
+            result.Set(i, item);
+        }
+    }
+
+    return result;
 }
 
 Napi::Value AutoType::ensure_modifier_not_pressed(const Napi::CallbackInfo &info) {
