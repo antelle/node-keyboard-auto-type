@@ -201,6 +201,7 @@ declare namespace NodeKeyboardAutoType {
             code?: number,
             modifier?: Modifier
         ): void;
+        ensureModifierNotPressed(): void;
 
         activePid(): number;
         activeWindow(): AppWindow;

@@ -66,6 +66,7 @@ class AutoType : public Napi::ObjectWrap<AutoType> {
     Napi::Value key_move_with_code(const Napi::CallbackInfo &info);
     Napi::Value key_move_with_modifier(const Napi::CallbackInfo &info);
     Napi::Value key_move_with_character(const Napi::CallbackInfo &info);
+    Napi::Value ensure_modifier_not_pressed(const Napi::CallbackInfo &info);
     Napi::Value active_window(const Napi::CallbackInfo &info);
     Napi::Value active_pid(const Napi::CallbackInfo &info);
     Napi::Value show_window(const Napi::CallbackInfo &info);
@@ -81,6 +82,7 @@ Napi::Object AutoType::init(Napi::Env env, Napi::Object exports) {
                         InstanceMethod<&AutoType::key_move_with_code>("keyMoveWithCode"),
                         InstanceMethod<&AutoType::key_move_with_modifier>("keyMoveWithModifier"),
                         InstanceMethod<&AutoType::key_move_with_character>("keyMoveWithCharacter"),
+                        InstanceMethod<&AutoType::ensure_modifier_not_pressed>("ensureModifierNotPressed"),
                         InstanceMethod<&AutoType::active_window>("activeWindow"),
                         InstanceMethod<&AutoType::active_pid>("activePid"),
                         InstanceMethod<&AutoType::show_window>("showWindow"),
@@ -235,6 +237,11 @@ Napi::Value AutoType::key_move_with_character(const Napi::CallbackInfo &info) {
     auto res = typer_.key_move(direction, character, code, modifier);
 
     return check_result(res, info.Env());
+}
+
+Napi::Value AutoType::ensure_modifier_not_pressed(const Napi::CallbackInfo &info) {
+    typer_.ensure_modifier_not_pressed();
+    return info.Env().Undefined();
 }
 
 Napi::Value AutoType::active_pid(const Napi::CallbackInfo &info) {
