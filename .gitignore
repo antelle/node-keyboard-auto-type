@@ -1,0 +1,12 @@
+.idea/
+.DS_Store
+node_modules/
+build/
+tmp/
+*.*.*/
+bin/
+*.log
+*.user
+*.iml
+xcode/
+.vscode/

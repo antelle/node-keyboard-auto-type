@@ -1,0 +1,37 @@
+{
+  "name": "keyboard-auto-type",
+  "version": "0.1.0",
+  "description": "Node.js bindings for keyboard-auto-type",
+  "main": "build/Release/keyboard-auto-type.node",
+  "types": "node-keyboard-auto-type.d.ts",
+  "scripts": {
+    "start": "npm run build",
+    "clean": "rm -rf build/Release bin",
+    "clean-all": "rm -rf build bin tmp xcode",
+    "build": "node-gyp configure build",
+    "validate-typings": "tsc node-keyboard-auto-type.d.ts",
+    "generate-xcode-project": "node-gyp configure -- -f xcode && mkdir -p xcode/node-keyboard-auto-type.xcodeproj && mv build/binding.xcodeproj/project.pbxproj xcode/node-keyboard-auto-type.xcodeproj/project.pbxproj",
+    "lint": "eslint example.js",
+    "example": "node example.js",
+    "format": "npm run prettier && npm run clang-format",
+    "clang-format": "clang-format -i --verbose src/*",
+    "prettier": "prettier --write example.js"
+  },
+  "author": "Antelle",
+  "license": "MIT",
+  "gypfile": true,
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/antelle/node-keyboard-auto-type.git"
+  },
+  "dependencies": {
+    "node-addon-api": "^3.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^14.14.16",
+    "eslint": "^7.16.0",
+    "node-gyp": "^7.1.2",
+    "prettier": "^2.2.1",
+    "typescript": "^4.1.3"
+  }
+}

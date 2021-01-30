@@ -1,0 +1,3 @@
+[submodule "keyboard-auto-type"]
+	path = keyboard-auto-type
+	url = git@github.com:antelle/keyboard-auto-type.git
