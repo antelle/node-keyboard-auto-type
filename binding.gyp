@@ -31,6 +31,7 @@
             'MACOSX_DEPLOYMENT_TARGET': '10.7',
             'GCC_ENABLE_CPP_EXCEPTIONS': 'NO',
             'CLANG_CXX_LANGUAGE_STANDARD': 'gnu++17',
+            'CLANG_ENABLE_OBJC_ARC': 'YES',
           },
           'link_settings': {
             'libraries': [
