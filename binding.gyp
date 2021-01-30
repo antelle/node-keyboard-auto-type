@@ -60,13 +60,13 @@
             'keyboard-auto-type/keyboard-auto-type/src/linux/x11-keysym-map.cpp',
           ],
           'include_dirs': [
-            '<!(pkg-config xorg --cflags-only-I | sed s/-I//g)',
+            '<!(pkg-config x11 --cflags-only-I | sed s/-I//g)',
             '<!(pkg-config atspi-2 --cflags-only-I | sed s/-I//g)',
             '<!(pkg-config glib-2.0 --cflags-only-I | sed s/-I//g)',
             '<!(pkg-config gobject-2.0 --cflags-only-I | sed s/-I//g)',
           ],
           'libraries': [
-            '<!(pkg-config xorg --libs)',
+            '<!(pkg-config x11 --libs)',
             '<!(pkg-config atspi-2 --libs)',
             '<!(pkg-config glib-2.0 --libs)',
             '<!(pkg-config gobject-2.0 --libs)',
