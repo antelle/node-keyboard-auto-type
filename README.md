@@ -31,6 +31,12 @@ typer.keyPress(KeyCode.D1, Modifier.Shift);
 typer.shortcut(KeyCode.A);
 ```
 
+## Feedback
+
+Do you need a binding that is missing? Please create an issue here, I'll add it!
+
+Found a bug in the implementation? Please do it in [keyboard-auto-type](https://github.com/antelle/keyboard-auto-type), I'll be happy to help you there.
+
 ## License
 
 [MIT](LICENSE)
