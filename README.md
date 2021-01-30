@@ -35,7 +35,7 @@ typer.shortcut(KeyCode.A);
 
 Do you need a binding that is missing? Please create an issue here, I'll add it!
 
-Found a bug in the implementation? Please do it in [keyboard-auto-type](https://github.com/antelle/keyboard-auto-type), I'll be happy to help you there.
+Found a bug in the implementation? Go to [keyboard-auto-type](https://github.com/antelle/keyboard-auto-type), I'll be happy to help you there.
 
 ## License
 
