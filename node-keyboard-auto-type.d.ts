@@ -197,8 +197,8 @@ declare namespace NodeKeyboardAutoType {
         keyMoveWithModifier(down: boolean, modifier: Modifier): void;
         keyMoveWithCharacter(
             down: boolean,
-            character: ?string,
-            code: ?KeyCode,
+            character?: string,
+            code?: number,
             modifier?: Modifier
         ): void;
 
