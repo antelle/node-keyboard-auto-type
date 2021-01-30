@@ -15,7 +15,8 @@
     "example": "node example.js",
     "format": "npm run prettier && npm run clang-format",
     "clang-format": "clang-format -i --verbose src/*",
-    "prettier": "prettier --write example.js"
+    "prettier": "prettier --write example.js",
+    "validate": "tsc node-keyboard-auto-type.d.ts"
   },
   "author": "Antelle",
   "license": "MIT",
