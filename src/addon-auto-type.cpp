@@ -1,6 +1,7 @@
 #include "addon-auto-type.h"
 
 #include <string>
+#include <optional>
 
 #include "keyboard-auto-type.h"
 
@@ -62,21 +63,28 @@ class AutoType : public Napi::ObjectWrap<AutoType> {
     Napi::Value text(const Napi::CallbackInfo &info);
     Napi::Value key_press(const Napi::CallbackInfo &info);
     Napi::Value shortcut(const Napi::CallbackInfo &info);
+    Napi::Value key_move_with_code(const Napi::CallbackInfo &info);
+    Napi::Value key_move_with_modifier(const Napi::CallbackInfo &info);
+    Napi::Value key_move_with_character(const Napi::CallbackInfo &info);
     Napi::Value active_window(const Napi::CallbackInfo &info);
     Napi::Value active_pid(const Napi::CallbackInfo &info);
     Napi::Value show_window(const Napi::CallbackInfo &info);
 };
 
 Napi::Object AutoType::init(Napi::Env env, Napi::Object exports) {
-    Napi::Function func = DefineClass(env, "AutoType",
-                                      {
-                                          InstanceMethod<&AutoType::text>("text"),
-                                          InstanceMethod<&AutoType::key_press>("keyPress"),
-                                          InstanceMethod<&AutoType::shortcut>("shortcut"),
-                                          InstanceMethod<&AutoType::active_window>("activeWindow"),
-                                          InstanceMethod<&AutoType::active_pid>("activePid"),
-                                          InstanceMethod<&AutoType::show_window>("showWindow"),
-                                      });
+    Napi::Function func =
+        DefineClass(env, "AutoType",
+                    {
+                        InstanceMethod<&AutoType::text>("text"),
+                        InstanceMethod<&AutoType::key_press>("keyPress"),
+                        InstanceMethod<&AutoType::shortcut>("shortcut"),
+                        InstanceMethod<&AutoType::key_move_with_code>("keyMoveWithCode"),
+                        InstanceMethod<&AutoType::key_move_with_modifier>("keyMoveWithModifier"),
+                        InstanceMethod<&AutoType::key_move_with_character>("keyMoveWithCharacter"),
+                        InstanceMethod<&AutoType::active_window>("activeWindow"),
+                        InstanceMethod<&AutoType::active_pid>("activePid"),
+                        InstanceMethod<&AutoType::show_window>("showWindow"),
+                    });
 
     Napi::FunctionReference *constructor = new Napi::FunctionReference();
 
@@ -137,6 +145,93 @@ Napi::Value AutoType::shortcut(const Napi::CallbackInfo &info) {
     }
 
     auto res = typer_.shortcut(static_cast<kbd::KeyCode>(code));
+
+    return check_result(res, info.Env());
+}
+
+Napi::Value AutoType::key_move_with_code(const Napi::CallbackInfo &info) {
+    if (info.Length() < 1 || !info[0].IsBoolean()) {
+        Napi::TypeError::New(info.Env(), "Bad direction").ThrowAsJavaScriptException();
+        return info.Env().Undefined();
+    }
+    auto direction = info[0].ToBoolean().Value() ? kbd::Direction::Down : kbd::Direction::Up;
+
+    if (info.Length() < 2 || !info[1].IsNumber()) {
+        Napi::TypeError::New(info.Env(), "Empty key code").ThrowAsJavaScriptException();
+        return info.Env().Undefined();
+    }
+
+    auto code = info[1].ToNumber().Int32Value();
+    if (code <= 0 && code >= static_cast<int>(kbd::KeyCode::KeyCodeCount)) {
+        Napi::RangeError::New(info.Env(), "Bad key code").ThrowAsJavaScriptException();
+        return info.Env().Undefined();
+    }
+
+    auto modifier = kbd::Modifier::None;
+    if (info.Length() > 2 && info[2].IsNumber()) {
+        modifier = static_cast<kbd::Modifier>(info[2].ToNumber().Uint32Value());
+    }
+
+    auto res = typer_.key_move(direction, static_cast<kbd::KeyCode>(code), modifier);
+
+    return check_result(res, info.Env());
+}
+
+Napi::Value AutoType::key_move_with_modifier(const Napi::CallbackInfo &info) {
+    if (info.Length() < 1 || !info[0].IsBoolean()) {
+        Napi::TypeError::New(info.Env(), "Bad direction").ThrowAsJavaScriptException();
+        return info.Env().Undefined();
+    }
+    auto direction = info[0].ToBoolean().Value() ? kbd::Direction::Down : kbd::Direction::Up;
+
+    if (info.Length() < 2 || !info[1].IsNumber()) {
+        Napi::TypeError::New(info.Env(), "Empty modifier").ThrowAsJavaScriptException();
+        return info.Env().Undefined();
+    }
+
+    auto modifier = static_cast<kbd::Modifier>(info[1].ToNumber().Uint32Value());
+
+    auto res = typer_.key_move(direction, modifier);
+
+    return check_result(res, info.Env());
+}
+
+Napi::Value AutoType::key_move_with_character(const Napi::CallbackInfo &info) {
+    if (info.Length() < 1 || !info[0].IsBoolean()) {
+        Napi::TypeError::New(info.Env(), "Bad direction").ThrowAsJavaScriptException();
+        return info.Env().Undefined();
+    }
+    auto direction = info[0].ToBoolean().Value() ? kbd::Direction::Down : kbd::Direction::Up;
+
+    char32_t character = 0;
+    if (info.Length() >= 2 && info[1].IsString()) {
+        auto str = to_str(info[1].ToString());
+        if (str.length()) {
+            character = str[0];
+        }
+    }
+
+    std::optional<kbd::os_key_code_t> code;
+    if (info.Length() >= 3 && info[2].IsNumber()) {
+        auto kc = info[2].ToNumber().Int32Value();
+        if (kc < 0) {
+            Napi::RangeError::New(info.Env(), "Bad key code").ThrowAsJavaScriptException();
+            return info.Env().Undefined();
+        }
+        code = static_cast<kbd::os_key_code_t>(kc);
+    }
+
+    if (!character && !code.has_value()) {
+        Napi::RangeError::New(info.Env(), "Either character, or code must be specified").ThrowAsJavaScriptException();
+        return info.Env().Undefined();
+    }
+
+    auto modifier = kbd::Modifier::None;
+    if (info.Length() >= 4 && info[3].IsNumber()) {
+        modifier = static_cast<kbd::Modifier>(info[3].ToNumber().Uint32Value());
+    }
+
+    auto res = typer_.key_move(direction, character, code, modifier);
 
     return check_result(res, info.Env());
 }

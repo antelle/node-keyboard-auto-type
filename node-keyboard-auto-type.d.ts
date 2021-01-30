@@ -39,7 +39,7 @@ declare namespace NodeKeyboardAutoType {
         X,
         Y,
         Z,
-    
+
         F1,
         F2,
         F3,
@@ -64,7 +64,7 @@ declare namespace NodeKeyboardAutoType {
         F22,
         F23,
         F24,
-    
+
         Keypad0,
         Keypad1,
         Keypad2,
@@ -75,7 +75,7 @@ declare namespace NodeKeyboardAutoType {
         Keypad7,
         Keypad8,
         Keypad9,
-    
+
         KeypadClear,
         KeypadDecimal,
         KeypadDivide,
@@ -84,7 +84,7 @@ declare namespace NodeKeyboardAutoType {
         KeypadMinus,
         KeypadMultiply,
         KeypadPlus,
-    
+
         // others
         Backslash,
         Comma,
@@ -97,7 +97,7 @@ declare namespace NodeKeyboardAutoType {
         RightBracket,
         Semicolon,
         Slash,
-    
+
         Meta,
         Command,
         Win,
@@ -118,17 +118,17 @@ declare namespace NodeKeyboardAutoType {
         CapsLock,
         NumLock,
         ScrollLock,
-    
+
         DownArrow,
         LeftArrow,
         RightArrow,
         UpArrow,
-    
+
         End,
         Home,
         PageDown,
         PageUp,
-    
+
         ContextMenu,
         BackwardDelete,
         Backspace,
@@ -146,30 +146,30 @@ declare namespace NodeKeyboardAutoType {
         VolumeUp,
         Pause,
         Insert,
-        Sleep,
+        Sleep
     }
 
     enum Modifier {
         None,
-    
+
         Ctrl,
         Control,
         RightCtrl,
         RightControl,
         LeftCtrl,
         LeftControl,
-    
+
         Alt,
         Option,
         RightAlt,
         RightOption,
         LeftAlt,
         LeftOption,
-    
+
         Shift,
         RightShift,
         LeftShift,
-    
+
         Meta,
         Command,
         Win,
@@ -178,25 +178,33 @@ declare namespace NodeKeyboardAutoType {
         RightWin,
         LeftMeta,
         LeftCommand,
-        LeftWin,
+        LeftWin
     }
 
     interface AppWindow {
-        pid?: number
-        windowId?: number
-        title?: string
-        appName?: string
-        url?: string
+        pid?: number;
+        windowId?: number;
+        title?: string;
+        appName?: string;
+        url?: string;
     }
 
     class AutoType {
-        text(str: string): void
-        keyPress(code: KeyCode, modifier?: Modifier): void
-        shortcut(code: KeyCode): void
+        text(str: string): void;
+        keyPress(code: KeyCode, modifier?: Modifier): void;
+        shortcut(code: KeyCode): void;
+        keyMoveWithCode(down: boolean, code: KeyCode, modifier?: Modifier): void;
+        keyMoveWithModifier(down: boolean, modifier: Modifier): void;
+        keyMoveWithCharacter(
+            down: boolean,
+            character: ?string,
+            code: ?KeyCode,
+            modifier?: Modifier
+        ): void;
 
-        activePid(): number
-        activeWindow(): AppWindow
-        showWindow(win: AppWindow): boolean
+        activePid(): number;
+        activeWindow(): AppWindow;
+        showWindow(win: AppWindow): boolean;
     }
 }
 
