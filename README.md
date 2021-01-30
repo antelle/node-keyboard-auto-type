@@ -16,12 +16,10 @@ You will find more docs in [keyboard-auto-type](https://github.com/antelle/keybo
 const { AutoType, KeyCode, Modifier } = require('keyboard-auto-type');
 
 const typer = new AutoType();
-// get active process id
-const pid = typer.activePid();
 // get active window
 const win = typer.activeWindow({ getWindowTitle: true, getBrowserUrl: true });
-// show the window
-typer.showWindow(win);
+// print something
+console.log('Going to type in this window', win);
 
 // type some text
 typer.text('Hello');
