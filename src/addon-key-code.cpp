@@ -1,4 +1,4 @@
-#include "key-code.h"
+#include "addon-key-code.h"
 
 #include "keyboard-auto-type.h"
 

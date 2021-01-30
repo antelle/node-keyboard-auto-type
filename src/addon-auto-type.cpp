@@ -1,4 +1,4 @@
-#include "auto-type.h"
+#include "addon-auto-type.h"
 
 #include <string>
 

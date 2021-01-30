@@ -1,4 +1,4 @@
-#include "modifier.h"
+#include "addon-modifier.h"
 
 #include "keyboard-auto-type.h"
 

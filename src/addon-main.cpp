@@ -1,9 +1,9 @@
 #include <napi.h>
 
-#include "auto-type.h"
-#include "key-code.h"
+#include "addon-auto-type.h"
+#include "addon-key-code.h"
+#include "addon-modifier.h"
 #include "keyboard-auto-type.h"
-#include "modifier.h"
 
 namespace kbd = keyboard_auto_type;
 

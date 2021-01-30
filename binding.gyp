@@ -3,17 +3,17 @@
     {
       'target_name': 'keyboard-auto-type',
       'sources': [
-        'src/addon.cpp',
-        'src/auto-type.cpp',
-        'src/key-code.cpp',
-        'src/modifier.cpp',
+        'src/addon-main.cpp',
+        'src/addon-auto-type.cpp',
+        'src/addon-key-code.cpp',
+        'src/addon-modifier.cpp',
         'keyboard-auto-type/keyboard-auto-type/src/auto-type.cpp',
         'keyboard-auto-type/keyboard-auto-type/src/utils.cpp',
       ],
       'include_dirs': [
         'keyboard-auto-type/keyboard-auto-type/include',
         'keyboard-auto-type/keyboard-auto-type/src',
-        '<!(node -p \'require("node-addon-api").include_dir\')'
+        '<!(node -p "require(\'node-addon-api\').include_dir")'
       ],
       'defines': [ 'NAPI_DISABLE_CPP_EXCEPTIONS' ],
       'cflags': [ '-fno-exceptions' ],
@@ -47,11 +47,17 @@
             'keyboard-auto-type/keyboard-auto-type/src/win32/key-map.cpp',
             'keyboard-auto-type/keyboard-auto-type/src/win32/winapi-tools.cpp',
           ],
+          'defines': [
+            'UNICODE',
+            '_UNICODE'
+          ],
           'msvs_settings': {
             'VCLinkerTool': {
               'AdditionalDependencies': ['Shlwapi.lib']
             },
-            'AdditionalOptions': [ '-std:c++17' ]
+            'VCCLCompilerTool': {
+              'AdditionalOptions': [ '-std:c++17' ]
+            }
           }
         }],
         [ 'OS=="linux"', {
