@@ -21,7 +21,7 @@
       'conditions': [
         [ 'OS=="mac"', {
           'sources': [
-            'keyboard-auto-type/keyboard-auto-type/src/darwin/auto-type.cpp',
+            'keyboard-auto-type/keyboard-auto-type/src/darwin/auto-type-darwin.cpp',
             'keyboard-auto-type/keyboard-auto-type/src/darwin/carbon-helpers.cpp',
             'keyboard-auto-type/keyboard-auto-type/src/darwin/key-map.cpp',
             'keyboard-auto-type/keyboard-auto-type/src/darwin/native-methods.mm',
@@ -43,7 +43,7 @@
         }],
         [ 'OS=="win"', {
           'sources': [
-            'keyboard-auto-type/keyboard-auto-type/src/win32/auto-type.cpp',
+            'keyboard-auto-type/keyboard-auto-type/src/win32/auto-type-win32.cpp',
             'keyboard-auto-type/keyboard-auto-type/src/win32/key-map.cpp',
             'keyboard-auto-type/keyboard-auto-type/src/win32/winapi-tools.cpp',
           ],
@@ -71,7 +71,7 @@
           ],
           'sources': [
             'keyboard-auto-type/keyboard-auto-type/src/linux/atspi-helpers.cpp',
-            'keyboard-auto-type/keyboard-auto-type/src/linux/auto-type.cpp',
+            'keyboard-auto-type/keyboard-auto-type/src/linux/auto-type-linux.cpp',
             'keyboard-auto-type/keyboard-auto-type/src/linux/key-map.cpp',
             'keyboard-auto-type/keyboard-auto-type/src/linux/x11-helpers.cpp',
             'keyboard-auto-type/keyboard-auto-type/src/linux/x11-keysym-map.cpp',
