@@ -1,38 +1,79 @@
 {
-  "targets": [
+  'targets': [
     {
-      "target_name": "keyboard-auto-type",
-      "sources": [
-        "src/addon.cpp",
-        "src/auto-type.cpp",
-        "src/key-code.cpp",
-        "src/modifier.cpp",
-        "keyboard-auto-type/keyboard-auto-type/src/auto-type.cpp",
-        "keyboard-auto-type/keyboard-auto-type/src/utils.cpp",
-        "keyboard-auto-type/keyboard-auto-type/src/darwin/auto-type.cpp",
-        "keyboard-auto-type/keyboard-auto-type/src/darwin/carbon-helpers.cpp",
-        "keyboard-auto-type/keyboard-auto-type/src/darwin/key-map.cpp",
-        "keyboard-auto-type/keyboard-auto-type/src/darwin/native-methods.mm",
+      'target_name': 'keyboard-auto-type',
+      'sources': [
+        'src/addon.cpp',
+        'src/auto-type.cpp',
+        'src/key-code.cpp',
+        'src/modifier.cpp',
+        'keyboard-auto-type/keyboard-auto-type/src/auto-type.cpp',
+        'keyboard-auto-type/keyboard-auto-type/src/utils.cpp',
       ],
-      "include_dirs": [
-        "keyboard-auto-type/keyboard-auto-type/include",
-        "keyboard-auto-type/keyboard-auto-type/src",
-        "<!(node -p \"require('node-addon-api').include_dir\")"
+      'include_dirs': [
+        'keyboard-auto-type/keyboard-auto-type/include',
+        'keyboard-auto-type/keyboard-auto-type/src',
+        '<!(node -p \'require("node-addon-api").include_dir\')'
       ],
-      "defines": [ "NAPI_DISABLE_CPP_EXCEPTIONS" ],
-      "link_settings": {
-        "libraries": [
-          "$(SDKROOT)/System/Library/Frameworks/AppKit.framework",
-          "$(SDKROOT)/System/Library/Frameworks/Carbon.framework",
-          "$(SDKROOT)/System/Library/Frameworks/CoreFoundation.framework",
-          "$(SDKROOT)/System/Library/Frameworks/ScriptingBridge.framework",
-        ],
-      },
-      "xcode_settings": {
-        "CLANG_CXX_LIBRARY": "libc++",
-        "MACOSX_DEPLOYMENT_TARGET": "10.14",
-        "CLANG_CXX_LANGUAGE_STANDARD": "gnu++17"
-      },
+      'defines': [ 'NAPI_DISABLE_CPP_EXCEPTIONS' ],
+      'conditions': [
+        [ 'OS=="mac"', {
+          'sources': [
+            'keyboard-auto-type/keyboard-auto-type/src/darwin/auto-type.cpp',
+            'keyboard-auto-type/keyboard-auto-type/src/darwin/carbon-helpers.cpp',
+            'keyboard-auto-type/keyboard-auto-type/src/darwin/key-map.cpp',
+            'keyboard-auto-type/keyboard-auto-type/src/darwin/native-methods.mm',
+          ],
+          'xcode_settings': {
+            'CLANG_CXX_LIBRARY': 'libc++',
+            'MACOSX_DEPLOYMENT_TARGET': '10.7',
+            'GCC_ENABLE_CPP_EXCEPTIONS': 'NO',
+            'CLANG_CXX_LANGUAGE_STANDARD': 'gnu++17',
+          },
+          'link_settings': {
+            'libraries': [
+              "$(SDKROOT)/System/Library/Frameworks/AppKit.framework",
+              "$(SDKROOT)/System/Library/Frameworks/Carbon.framework",
+              "$(SDKROOT)/System/Library/Frameworks/CoreFoundation.framework",
+              "$(SDKROOT)/System/Library/Frameworks/ScriptingBridge.framework",
+            ]
+          }
+        }],
+        [ 'OS=="win"', {
+          'sources': [
+            'keyboard-auto-type/keyboard-auto-type/src/win32/auto-type.cpp',
+            'keyboard-auto-type/keyboard-auto-type/src/win32/key-map.cpp',
+            'keyboard-auto-type/keyboard-auto-type/src/win32/winapi-tools.cpp',
+          ],
+          'msvs_settings': {
+            'VCLinkerTool': {
+              'AdditionalDependencies': ['Shlwapi.lib']
+            }
+          }
+        }],
+        [ 'OS=="linux"', {
+          'sources': [
+            'keyboard-auto-type/keyboard-auto-type/src/linux/atspi-helpers.cpp',
+            'keyboard-auto-type/keyboard-auto-type/src/linux/auto-type.cpp',
+            'keyboard-auto-type/keyboard-auto-type/src/linux/key-map.cpp',
+            'keyboard-auto-type/keyboard-auto-type/src/linux/x11-helpers.cpp',
+            'keyboard-auto-type/keyboard-auto-type/src/linux/x11-keysym-map.cpp',
+          ],
+          'include_dirs': [
+            '<!(pkg-config xorg --cflags-only-I | sed s/-I//g)',
+            '<!(pkg-config atspi-2 --cflags-only-I | sed s/-I//g)',
+            '<!(pkg-config glib-2.0 --cflags-only-I | sed s/-I//g)',
+            '<!(pkg-config gobject-2.0 --cflags-only-I | sed s/-I//g)',
+          ],
+          'libraries': [
+            '<!(pkg-config xorg --libs)',
+            '<!(pkg-config atspi-2 --libs)',
+            '<!(pkg-config glib-2.0 --libs)',
+            '<!(pkg-config gobject-2.0 --libs)',
+            'Xtst',
+          ]
+        }]
+      ]
     }
   ]
 }
