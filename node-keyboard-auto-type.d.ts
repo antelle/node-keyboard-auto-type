@@ -192,6 +192,7 @@ declare namespace NodeKeyboardAutoType {
     class AutoType {
         text(str: string): void
         keyPress(code: KeyCode, modifier?: Modifier): void
+        shortcut(code: KeyCode): void
 
         activePid(): number
         activeWindow(): AppWindow

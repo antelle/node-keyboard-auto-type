@@ -30,6 +30,28 @@ std::u32string to_str(Napi::String value) {
     return std::u32string(u32str.begin(), u32str.end());
 }
 
+Napi::Value check_result(kbd::AutoTypeResult res, Napi::Env env) {
+    switch (res) {
+    case kbd::AutoTypeResult::Ok:
+        return env.Undefined();
+    case kbd::AutoTypeResult::BadArg:
+        Napi::Error::New(env, "Bad argument").ThrowAsJavaScriptException();
+        return env.Undefined();
+    case kbd::AutoTypeResult::KeyPressFailed:
+        Napi::Error::New(env, "Key press failed").ThrowAsJavaScriptException();
+        return env.Undefined();
+    case kbd::AutoTypeResult::ModifierNotReleased:
+        Napi::Error::New(env, "Modifier not released").ThrowAsJavaScriptException();
+        return env.Undefined();
+    case kbd::AutoTypeResult::NotSupported:
+        Napi::Error::New(env, "Not supported").ThrowAsJavaScriptException();
+        return env.Undefined();
+    case kbd::AutoTypeResult::OsError:
+        Napi::Error::New(env, "OS error").ThrowAsJavaScriptException();
+        return env.Undefined();
+    }
+}
+
 class AutoType : public Napi::ObjectWrap<AutoType> {
   public:
     static Napi::Object init(Napi::Env env, Napi::Object exports);
@@ -39,6 +61,7 @@ class AutoType : public Napi::ObjectWrap<AutoType> {
     kbd::AutoType typer_;
     Napi::Value text(const Napi::CallbackInfo &info);
     Napi::Value key_press(const Napi::CallbackInfo &info);
+    Napi::Value shortcut(const Napi::CallbackInfo &info);
     Napi::Value active_window(const Napi::CallbackInfo &info);
     Napi::Value active_pid(const Napi::CallbackInfo &info);
     Napi::Value show_window(const Napi::CallbackInfo &info);
@@ -49,6 +72,7 @@ Napi::Object AutoType::init(Napi::Env env, Napi::Object exports) {
                                       {
                                           InstanceMethod<&AutoType::text>("text"),
                                           InstanceMethod<&AutoType::key_press>("keyPress"),
+                                          InstanceMethod<&AutoType::shortcut>("shortcut"),
                                           InstanceMethod<&AutoType::active_window>("activeWindow"),
                                           InstanceMethod<&AutoType::active_pid>("activePid"),
                                           InstanceMethod<&AutoType::show_window>("showWindow"),
@@ -73,9 +97,9 @@ Napi::Value AutoType::text(const Napi::CallbackInfo &info) {
     }
 
     auto text = to_str(info[0].ToString());
-    typer_.text(text);
+    auto res = typer_.text(text);
 
-    return info.Env().Undefined();
+    return check_result(res, info.Env());
 }
 
 Napi::Value AutoType::key_press(const Napi::CallbackInfo &info) {
@@ -95,9 +119,26 @@ Napi::Value AutoType::key_press(const Napi::CallbackInfo &info) {
         modifier = static_cast<kbd::Modifier>(info[1].ToNumber().Uint32Value());
     }
 
-    typer_.key_press(static_cast<kbd::KeyCode>(code), modifier);
+    auto res = typer_.key_press(static_cast<kbd::KeyCode>(code), modifier);
 
-    return info.Env().Undefined();
+    return check_result(res, info.Env());
+}
+
+Napi::Value AutoType::shortcut(const Napi::CallbackInfo &info) {
+    if (!info.Length() || !info[0].IsNumber()) {
+        Napi::TypeError::New(info.Env(), "Empty key code").ThrowAsJavaScriptException();
+        return info.Env().Undefined();
+    }
+
+    auto code = info[0].ToNumber().Int32Value();
+    if (code <= 0 && code >= static_cast<int>(kbd::KeyCode::KeyCodeCount)) {
+        Napi::RangeError::New(info.Env(), "Bad key code").ThrowAsJavaScriptException();
+        return info.Env().Undefined();
+    }
+
+    auto res = typer_.shortcut(static_cast<kbd::KeyCode>(code));
+
+    return check_result(res, info.Env());
 }
 
 Napi::Value AutoType::active_pid(const Napi::CallbackInfo &info) {

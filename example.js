@@ -10,3 +10,4 @@ console.log('Active window:', win);
 
 typer.text('Hello');
 typer.keyPress(KeyCode.D1, Modifier.Shift);
+typer.shortcut(KeyCode.A);

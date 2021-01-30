@@ -27,6 +27,8 @@ typer.showWindow(win);
 typer.text('Hello');
 // press shift+1
 typer.keyPress(KeyCode.D1, Modifier.Shift);
+// select all
+typer.shortcut(KeyCode.A);
 ```
 
 ## License
