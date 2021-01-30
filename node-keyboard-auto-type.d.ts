@@ -202,6 +202,8 @@ declare namespace NodeKeyboardAutoType {
             modifier?: Modifier
         ): void;
         ensureModifierNotPressed(): void;
+        setAutoUnpressModifiers(autoUnpressModifiers: boolean): void;
+        setCheckPressedModifiers(checkPressedModifiers: boolean): void;
 
         activePid(): number;
         activeWindow(): AppWindow;
