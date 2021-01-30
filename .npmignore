@@ -1,8 +1,13 @@
 *
-!src/*.*
+.DS_Store
+!src/*.cpp
+!src/*.h
 !README.md
 !LICENSE
 !package.json
 !package-lock.json
 !binding.gyp
 !node-keyboard-auto-type.d.ts
+!keyboard-auto-type/keyboard-auto-type/**/*.cpp
+!keyboard-auto-type/keyboard-auto-type/**/*.h
+!keyboard-auto-type/keyboard-auto-type/**/*.mm
