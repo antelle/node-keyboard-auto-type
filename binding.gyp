@@ -16,6 +16,8 @@
         '<!(node -p \'require("node-addon-api").include_dir\')'
       ],
       'defines': [ 'NAPI_DISABLE_CPP_EXCEPTIONS' ],
+      'cflags': [ '-fno-exceptions' ],
+      'cflags_cc': [ '-fno-exceptions' ],
       'conditions': [
         [ 'OS=="mac"', {
           'sources': [
@@ -48,10 +50,19 @@
           'msvs_settings': {
             'VCLinkerTool': {
               'AdditionalDependencies': ['Shlwapi.lib']
-            }
+            },
+            'AdditionalOptions': [ '-std:c++17' ]
           }
         }],
         [ 'OS=="linux"', {
+          'cflags_cc': [
+            '-std=c++17',
+            '<!(pkg-config x11 --cflags-only-I)',
+            '<!(pkg-config xtst --cflags-only-I)',
+            '<!(pkg-config atspi-2 --cflags-only-I)',
+            '<!(pkg-config glib-2.0 --cflags-only-I)',
+            '<!(pkg-config gobject-2.0 --cflags-only-I)',
+          ],
           'sources': [
             'keyboard-auto-type/keyboard-auto-type/src/linux/atspi-helpers.cpp',
             'keyboard-auto-type/keyboard-auto-type/src/linux/auto-type.cpp',
@@ -59,18 +70,12 @@
             'keyboard-auto-type/keyboard-auto-type/src/linux/x11-helpers.cpp',
             'keyboard-auto-type/keyboard-auto-type/src/linux/x11-keysym-map.cpp',
           ],
-          'include_dirs': [
-            '<!(pkg-config x11 --cflags-only-I | sed s/-I//g)',
-            '<!(pkg-config atspi-2 --cflags-only-I | sed s/-I//g)',
-            '<!(pkg-config glib-2.0 --cflags-only-I | sed s/-I//g)',
-            '<!(pkg-config gobject-2.0 --cflags-only-I | sed s/-I//g)',
-          ],
           'libraries': [
             '<!(pkg-config x11 --libs)',
+            '<!(pkg-config xtst --libs)',
             '<!(pkg-config atspi-2 --libs)',
             '<!(pkg-config glib-2.0 --libs)',
             '<!(pkg-config gobject-2.0 --libs)',
-            'Xtst',
           ]
         }]
       ]
