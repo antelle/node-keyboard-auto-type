@@ -244,7 +244,7 @@ Napi::Value AutoType::key_move_with_character(const Napi::CallbackInfo &info) {
 }
 
 Napi::Value AutoType::set_auto_unpress_modifiers(const Napi::CallbackInfo &info) {
-    if (!info.Length() || info[0].IsBoolean()) {
+    if (!info.Length() || !info[0].IsBoolean()) {
         Napi::TypeError::New(info.Env(), "Bad option").ThrowAsJavaScriptException();
         return info.Env().Undefined();
     }
@@ -254,7 +254,7 @@ Napi::Value AutoType::set_auto_unpress_modifiers(const Napi::CallbackInfo &info)
 }
 
 Napi::Value AutoType::set_check_pressed_modifiers(const Napi::CallbackInfo &info) {
-    if (!info.Length() || info[0].IsBoolean()) {
+    if (!info.Length() || !info[0].IsBoolean()) {
         Napi::TypeError::New(info.Env(), "Bad option").ThrowAsJavaScriptException();
         return info.Env().Undefined();
     }
