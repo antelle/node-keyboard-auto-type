@@ -1,7 +1,7 @@
 #include "addon-auto-type.h"
 
-#include <string>
 #include <optional>
+#include <string>
 
 #include "keyboard-auto-type.h"
 
@@ -222,7 +222,8 @@ Napi::Value AutoType::key_move_with_character(const Napi::CallbackInfo &info) {
     }
 
     if (!character && !code.has_value()) {
-        Napi::RangeError::New(info.Env(), "Either character, or code must be specified").ThrowAsJavaScriptException();
+        Napi::RangeError::New(info.Env(), "Either character, or code must be specified")
+            .ThrowAsJavaScriptException();
         return info.Env().Undefined();
     }
 
