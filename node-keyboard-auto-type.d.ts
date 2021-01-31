@@ -194,6 +194,10 @@ declare namespace NodeKeyboardAutoType {
         modifier: Modifier;
     }
 
+    class AutoTypeTextTransaction {
+        done(): void;
+    }
+
     class AutoType {
         text(str: string): void;
         keyPress(code: KeyCode, modifier?: Modifier): void;
@@ -211,6 +215,7 @@ declare namespace NodeKeyboardAutoType {
         ensureModifierNotPressed(): void;
         setAutoUnpressModifiers(autoUnpressModifiers: boolean): void;
         setCheckPressedModifiers(checkPressedModifiers: boolean): void;
+        beginBatchTextEntry(): AutoTypeTextTransaction;
 
         activePid(): number;
         activeWindow(): AppWindow;

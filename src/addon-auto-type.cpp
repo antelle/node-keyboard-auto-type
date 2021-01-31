@@ -53,6 +53,10 @@ Napi::Value check_result(kbd::AutoTypeResult res, Napi::Env env) {
     }
 }
 
+struct TextTranctionHolder {
+    kbd::AutoTypeTextTransaction txn;
+};
+
 class AutoType : public Napi::ObjectWrap<AutoType> {
   public:
     static Napi::Object init(Napi::Env env, Napi::Object exports);
@@ -71,9 +75,12 @@ class AutoType : public Napi::ObjectWrap<AutoType> {
     Napi::Value ensure_modifier_not_pressed(const Napi::CallbackInfo &info);
     Napi::Value os_key_code(const Napi::CallbackInfo &info);
     Napi::Value os_key_codes_for_chars(const Napi::CallbackInfo &info);
+    Napi::Value begin_batch_text_entry(const Napi::CallbackInfo &info);
     Napi::Value active_window(const Napi::CallbackInfo &info);
     Napi::Value active_pid(const Napi::CallbackInfo &info);
     Napi::Value show_window(const Napi::CallbackInfo &info);
+
+    static void text_transaction_finalizer(Napi::Env env, TextTranctionHolder *tx_holder);
 };
 
 Napi::Object AutoType::init(Napi::Env env, Napi::Object exports) {
@@ -91,6 +98,7 @@ Napi::Object AutoType::init(Napi::Env env, Napi::Object exports) {
             InstanceMethod<&AutoType::ensure_modifier_not_pressed>("ensureModifierNotPressed"),
             InstanceMethod<&AutoType::os_key_code>("osKeyCode"),
             InstanceMethod<&AutoType::os_key_codes_for_chars>("osKeyCodesForChars"),
+            InstanceMethod<&AutoType::begin_batch_text_entry>("beginBatchTextEntry"),
             InstanceMethod<&AutoType::active_window>("activeWindow"),
             InstanceMethod<&AutoType::active_pid>("activePid"),
             InstanceMethod<&AutoType::show_window>("showWindow"),
@@ -311,6 +319,22 @@ Napi::Value AutoType::os_key_codes_for_chars(const Napi::CallbackInfo &info) {
     }
 
     return result;
+}
+
+Napi::Value AutoType::begin_batch_text_entry(const Napi::CallbackInfo &info) {
+    auto tx = typer_.begin_batch_text_entry();
+    auto tx_holder = new TextTranctionHolder { std::move(tx) };
+
+    auto obj = Napi::Object::New(info.Env());
+    obj.AddFinalizer(text_transaction_finalizer, tx_holder);
+    obj.Set("done", Napi::Function::New(info.Env(), [tx_holder](const Napi::CallbackInfo &info) {
+                tx_holder->txn.done();
+            }));
+    return obj;
+}
+
+void AutoType::text_transaction_finalizer(Napi::Env env, TextTranctionHolder *tx_holder) {
+    delete tx_holder;
 }
 
 Napi::Value AutoType::ensure_modifier_not_pressed(const Napi::CallbackInfo &info) {
